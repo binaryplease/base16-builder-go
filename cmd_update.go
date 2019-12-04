@@ -25,37 +25,29 @@ func init() {
 
 }
 
-// buildCmd represents the build command
+// updateCmd represents the command to update all sources, schemes and templates
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Pull in updates from the source repos",
 	Run: func(cmd *cobra.Command, args []string) {
-		var errored bool
 
 		log.Info("Updating sources")
 		if !cloneRepo(templatesSource, filepath.Join(sourcesDir, "templates"), "templates") {
 			errorOrFatal(updateIgnoreErrors, "Failed to update template sources")
-			errored = true
 		}
+
 		if !cloneRepo(schemesSource, filepath.Join(sourcesDir, "schemes"), "schemes") {
 			errorOrFatal(updateIgnoreErrors, "Failed to update scheme sources")
-			errored = true
 		}
 
 		log.Info("Updating schemes")
 		if !downloadSourceList(filepath.Join(sourcesDir, "schemes", "list.yaml"), schemesDir) {
 			errorOrFatal(updateIgnoreErrors, "Failed to update schemes")
-			errored = true
 		}
 
 		log.Info("Updating templates")
 		if !downloadSourceList(filepath.Join(sourcesDir, "templates", "list.yaml"), templatesDir) {
 			errorOrFatal(updateIgnoreErrors, "Failed to update templates")
-			errored = true
-		}
-
-		if errored {
-			log.Fatal("An error occured while updating")
 		}
 	},
 }
